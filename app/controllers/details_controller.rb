@@ -5,7 +5,7 @@ class DetailsController < ApplicationController
     end
     def show
         @detail=Detail.find(params[:id])
-        render json:@detail
+        render 'show'
     end
 
     def create

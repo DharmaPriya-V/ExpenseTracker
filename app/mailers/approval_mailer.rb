@@ -4,7 +4,13 @@ class ApprovalMailer < ApplicationMailer
         @token=params[:user].signed_id
         @user=params[:user]
         @det=params[:det]
-        mail(to: "dharmapriya333@gmail.com", from: "priyacred3@gmail.com", subject: "Expense", message: @det.approval)
+        mail(to: @user.email, from: "priyacred3@gmail.com", subject: "Expense", message: @det.approval)
 
-end
+    end
+    def section
+        @comment=params[:comment]
+        @expid=params[:expid]
+        @username=User.find(@expid[:user_id])
+        mail(to: @username.email, from: "priyacred3@gmail.com", subject: "Comment on ur Expense")
+    end
 end
