@@ -1,10 +1,9 @@
 class ApprovalMailer < ApplicationMailer
     default from: "priya@gmail.com"
     def confirmation
-        @token=params[:user].signed_id
-        @user=params[:user]
+        @updater=params[:updater]
         @det=params[:det]
-        mail(to: @user.email, from: "priyacred3@gmail.com", subject: "Expense", message: @det.approval)
+        mail(to: "dharmapriya333@gmail.com", from: "priyacred3@gmail.com", subject: "Expense", message: @det.approval)
 
     end
     def section
@@ -13,4 +12,9 @@ class ApprovalMailer < ApplicationMailer
         @username=User.find(@expid[:user_id])
         mail(to: @username.email, from: "priyacred3@gmail.com", subject: "Comment on ur Expense")
     end
+    def grpmail
+        @up=params[:updater]
+        @ex=params[:expgrp]
+        mail(to: "dharmapriya333@gmail.com", from: "priyacred3@gmail.com", subject: "Expense group")
+end
 end

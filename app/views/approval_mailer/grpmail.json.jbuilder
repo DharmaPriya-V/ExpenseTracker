@@ -1,0 +1,1 @@
+json.extract! @ex, :name, :approvedamount, :totalamount

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_12_103935) do
+ActiveRecord::Schema.define(version: 2021_07_13_153924) do
 
   create_table "comments", force: :cascade do |t|
     t.integer "detail_id"
@@ -29,8 +29,12 @@ ActiveRecord::Schema.define(version: 2021_07_12_103935) do
     t.integer "user_id"
     t.string "approval"
     t.integer "invoiceno"
+    t.integer "expensegroup_id"
     t.index ["user_id"], name: "index_details_on_user_id"
   end
+
+# Could not dump table "expensegroups" because of following StandardError
+#   Unknown type 'String' for column 'grp_status'
 
   create_table "users", force: :cascade do |t|
     t.string "email"

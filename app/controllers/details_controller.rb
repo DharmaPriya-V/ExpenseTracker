@@ -10,45 +10,77 @@ class DetailsController < ApplicationController
 
     def create
         data=json_payload
-        detail=Detail.new(data)
-            if invoice_check(detail) || true
+        user=Expensegroup.find(data[:expensegroup_id])
+        if user[:user_id]==data[:user_id].to_i
+               detail=user.details.new(data)
                 if detail.save
-                  render json: detail
+                      invoice_check(detail)
+                      render json: detail
                    else
-                render json: {"error": "cant be saved"}
-                end
-            end
+                       render json: {"error": "cant be saved"}
+                    end
+        else
+            render json: "Not authorized"
     end
+end
 
     def destroy
-        @detail=Detail.find(params[:eid])
-        user_id=@detail[:user_id]
-        if user_id==current_user[:id]
-            @detail.destroy
-        else
-            render json: {"error": "not created"}
-        end
+        @emp=User.find(params[:id])
+        @expgrpid=@emp.expensegroups.find(params[:expgrpid])
+            @exp=Detail.find(params[:expid])
+            if @expgrpid[:id]==@exp[:expensegroup_id]
+                 @exp.destroy
+            else
+            render json: "Error"
+            end
     end
 
     def invoice_check(detail)
         val=detail[:invoiceno].to_i
         if val%2!=0
-            detail[:approval]="rejected" 
+             detail.update(approval: "rejected") 
          end                          
     end
-
     def update
-        @det=Detail.find(params[:id])
-        @user=User.find(@det[:user_id])
-            if @det.update(detail_params)
-                 ApprovalMailer.with(user: @user, det: @det).confirmation.deliver_now
-                 render json: @det
+        @updater=User.find(params[:user_id])
+        @det=Detail.find(params[:expid])
+        if ((current_user.admin? && current_user.id!=@updater.id) && @det.user_id==params[:user_id].to_i)
+            if @det.update(json_payload)
+                 ApprovalMailer.with(updater: @updater, det: @det).confirmation.deliver_now
+                 send_mail
              else
                 render json: @det.errors
              end
+            else
+                render json: "error"
+            end
+    end
+    
+    def send_mail
+        expgrpid=@det[:expensegroup_id]
+        @expensegroup=Expensegroup.find(expgrpid)
+        sel=@expensegroup.details.where(:approval=>"pending")
+       if (sel.count==0) && (@expensegroup[:status]=="sent")
+               @expensegroup.totalamount=0
+               @expensegroup.approvedamount=0
+               @expensegroup.details.each do |expense|
+                    if expense[:approval]== "accepted"
+                        @expensegroup.approvedamount+=expense.amount    
+                    end
+                    @expensegroup.totalamount+=expense.amount
+                    end
+                if @expensegroup.save
+                    ApprovalMailer.with(updater: @updater, expgrp: @expensegroup).grpmail.deliver_now
+                else
+                    render json: "Mail cant be sent"
+                end
+        else
+                render json: "Finish approval"
+        end
+     end
+
     end
 
-        def detail_params
-           params.require(:detail).permit(:approval)
-        end           
-end
+
+    
+    

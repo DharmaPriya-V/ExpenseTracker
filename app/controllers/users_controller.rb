@@ -9,6 +9,7 @@ class UsersController < ApplicationController
         if User.exists?(:email => "#{user[:email]}")
             render json: {"error": "Already exits"}
         else
+            user.status="active"
             if user.save
                 render json: user
               else
@@ -18,24 +19,20 @@ class UsersController < ApplicationController
     end
 
     def destroy
-        @user=current_user
-        if authorize @user, :accept?
-        @user.destroy
-    end
+        @user=User.find(params[:id])
+        @del=User.find(params[:empid])
+         authorize @user, :accept?
+         if @user.id==@del.id
+            render json: "U cant delete your own account"
+         else
+            @user.destroy
+         end
+        
 end
 
     def show
         @user=User.find(params[:id])
         render 'show', formats: [:json], handlers: [:jbuilder], status: 200
-    end
-
-    def accept
-        @user=User.find(params[:id])
-        if authorize @user
-            render json: "Accepted"
-        else
-            render json: "not authorized"
-        end
     end
 
 end
