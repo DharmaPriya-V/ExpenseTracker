@@ -10,7 +10,7 @@ class ApprovalMailer < ApplicationMailer
         @comment=params[:comment]
         @expid=params[:expid]
         @username=User.find(@expid[:user_id])
-        mail(to: @username.email, from: "priyacred3@gmail.com", subject: "Comment on ur Expense")
+        mail(to: @username.email, from: "vssanthosh44@gmail.com", subject: "Comment on ur Expense")
     end
     def grpmail
         @up=params[:updater]

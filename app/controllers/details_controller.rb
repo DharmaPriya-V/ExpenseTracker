@@ -1,4 +1,5 @@
 class DetailsController < ApplicationController
+    MODIFY_DATA= %[approval].freeze
     def index
         detail=Detail.all
         render json: detail
@@ -11,7 +12,7 @@ class DetailsController < ApplicationController
     def create
         data=json_payload
         empid=Employee.find(data[:user_id])
-        if empid.status=="active" && Expensegroup[:user_id]==empid.id
+        if empid.status=="active"
                user=empid.expensegroups.find(data[:expensegroup_id])
                detail=user.details.new(data)
                 if detail.save
@@ -44,9 +45,11 @@ end
     end
     def update
         @updater=User.find(params[:user_id])
-        @det=Detail.find(params[:expid])
-        if ((current_user.admin? && current_user.id!=@updater.id) && @det.user_id==params[:user_id].to_i)
-            if @det.update(json_payload)
+        @expensegroup=@updater.expensegroups.find(params[:expgrpid])
+        @det=@expensegroup.details.find(params[:expid])
+        if ((current_user.admin? && current_user.id!=@updater.id))
+            data = json_payload.select { |k| MODIFY_DATA.include? k}
+            if @det.update(data)
                  ApprovalMailer.with(updater: @updater, det: @det).confirmation.deliver_now
                  send_mail
              else
@@ -58,8 +61,6 @@ end
     end
     
     def send_mail
-        expgrpid=@det[:expensegroup_id]
-        @expensegroup=Expensegroup.find(expgrpid)
         sel=@expensegroup.details.where(:approval=>"pending")
        if (sel.count==0) && (@expensegroup[:status]=="sent")
                @expensegroup.totalamount=0

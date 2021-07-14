@@ -1,5 +1,6 @@
 class ExpensegroupsController < ApplicationController
     ALLOWED_DATA= %[user_id name].freeze
+    MODIFY_DATA= %[status].freeze
      def create
         data = json_payload.select { |k| ALLOWED_DATA.include? k}
        employeeid=data[:user_id]
@@ -28,10 +29,20 @@ def index
     @exp=Expensegroup.all
     render json:@exp
 end
+def destroy
+    emp=User.find(params[:id])
+    expgrp=emp.expensegroups.find(params[:expgrpid])
+    if expgrp.destroy 
+    render json:"Deleted"
+    else
+    render json: "Cant be deleted"
+    end
+end
+
 def status_modify
     @emp=User.find(params[:id])
     @expgrp=@emp.expensegroups.find(params[:expgrpid])
-     data=json_payload
+    data = json_payload.select { |k| MODIFY_DATA.include? k}
      if @expgrp.details.count!=0
            @expgrp.update(data)
      else

@@ -1,4 +1,6 @@
 class UsersController < ApplicationController
+    ALLOWED_DATA= %[email phoneno gender name].freeze
+    TERMINATE_DATA= %[status].freeze
     def index
         user=User.all
         render json: user
@@ -29,6 +31,29 @@ class UsersController < ApplicationController
          end
         
 end
+
+def update
+    userid=User.find(params[:id])
+        data = json_payload.select { |k| ALLOWED_DATA.include? k}
+        if userid.update(data)
+        render json: :"Updated successfully #{userid}"
+        else
+            render json: "Cant be updated"
+        end
+    end 
+
+    def terminate
+        @user=User.find(params[:id])
+        emp=User.find(params[:eid])
+        authorize @user, :accept?
+        data = json_payload.select { |k| TERMINATE_DATA.include? k}
+        if emp.update(data)
+            render json: "Terminated"
+        else
+            render json: "Cant be terminated"
+        end
+    end
+
 
     def show
         @user=User.find(params[:id])

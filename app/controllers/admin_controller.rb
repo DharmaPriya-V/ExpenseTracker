@@ -1,6 +1,7 @@
 class AdminController < ApplicationController
+    ALLOWED_DATA= %[empid].freeze
      def search
-        data=json_payload
+        data = json_payload.select { |k| ALLOWED_DATA.include? k}
         @user=User.find(params[:id])
         empid= data[:empid]
         if empid && (authorize @user, :accept?)
@@ -14,5 +15,5 @@ class AdminController < ApplicationController
                 render json: "enter the Employee id to search"
             end
        
+        end
     end
-   
