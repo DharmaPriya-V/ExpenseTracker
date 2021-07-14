@@ -5,6 +5,10 @@ class Comment < ApplicationRecord
         expense=Detail.find(detail_id)
         userid=expense[:user_id]
          username=User.find(userid)
-        "#{description}                  commented by #{username.name}"
+         if parent_id.to_i==0
+            "#{description} commented by admin"
+         else
+            "#{description} commented by #{username[:name]} to #{parent_id}"            
     end
+end
 end

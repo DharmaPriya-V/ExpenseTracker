@@ -10,13 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_13_153924) do
+ActiveRecord::Schema.define(version: 2021_07_14_043645) do
 
   create_table "comments", force: :cascade do |t|
     t.integer "detail_id"
     t.string "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "parent_id"
   end
 
   create_table "details", force: :cascade do |t|

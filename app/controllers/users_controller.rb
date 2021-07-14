@@ -25,7 +25,7 @@ class UsersController < ApplicationController
          if @user.id==@del.id
             render json: "U cant delete your own account"
          else
-            @user.destroy
+            @del.destroy
          end
         
 end

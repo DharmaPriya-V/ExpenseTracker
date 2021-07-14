@@ -10,15 +10,16 @@ class DetailsController < ApplicationController
 
     def create
         data=json_payload
-        user=Expensegroup.find(data[:expensegroup_id])
-        if user[:user_id]==data[:user_id].to_i
+        empid=Employee.find(data[:user_id])
+        if empid.status=="active" && Expensegroup[:user_id]==empid.id
+               user=empid.expensegroups.find(data[:expensegroup_id])
                detail=user.details.new(data)
                 if detail.save
                       invoice_check(detail)
                       render json: detail
-                   else
+                else
                        render json: {"error": "cant be saved"}
-                    end
+                end
         else
             render json: "Not authorized"
     end
