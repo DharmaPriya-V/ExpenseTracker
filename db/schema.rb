@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_14_043645) do
+ActiveRecord::Schema.define(version: 2021_07_15_073921) do
 
   create_table "comments", force: :cascade do |t|
     t.integer "detail_id"
@@ -31,6 +31,7 @@ ActiveRecord::Schema.define(version: 2021_07_14_043645) do
     t.string "approval"
     t.integer "invoiceno"
     t.integer "expensegroup_id"
+    t.string "bills"
     t.index ["user_id"], name: "index_details_on_user_id"
   end
 

@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   delete "/comments/:id/:expgrpid/:detail_id/:cid", to: "comments#destroy_employee"
   get "/comments/", to: "comments#show"
   patch "/details/:id/:user_id/:expgrpid/:expid", to: "details#update"
+  patch "/details/:id/:expgrpid/:expid", to: "details#update_detail"
   get "/comments", to: "comments#show"
  get "/expensegroups/", to:"expensegroups#index"
  post "/expensegroups/", to:"expensegroups#create"
