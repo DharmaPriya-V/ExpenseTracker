@@ -15,7 +15,7 @@ class UsersController < ApplicationController
             if user.save
                 render json: user
               else
-                render json: {"error": "Please ensure you entered correct email Address and Password"}
+                render json: {"error": "Please ensure you entered correct details"}
                end
         end
     end
@@ -47,12 +47,16 @@ def update
         emp=User.find(params[:eid])
         authorize @user, :accept?
         data = json_payload.select { |k| TERMINATE_DATA.include? k}
-        if emp.update(data)
-            render json: "Terminated"
+        if @user.id==emp.id
+            render json: "U cant terminate your own account"
         else
+          if emp.update(data)
+            render json: "Terminated"
+          else
             render json: "Cant be terminated"
+          end
+         end
         end
-    end
 
 
     def show

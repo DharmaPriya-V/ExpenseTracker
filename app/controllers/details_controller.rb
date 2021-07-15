@@ -11,9 +11,10 @@ class DetailsController < ApplicationController
 
     def create
         data=json_payload
-        empid=Employee.find(data[:user_id])
+        empid=User.find(data[:user_id])
         if empid.status=="active"
                user=empid.expensegroups.find(data[:expensegroup_id])
+               if user.status!="sent"
                detail=user.details.new(data)
                 if detail.save
                       invoice_check(detail)
@@ -21,6 +22,9 @@ class DetailsController < ApplicationController
                 else
                        render json: {"error": "cant be saved"}
                 end
+            else
+                 render json: "Already sent cant add expense" 
+            end
         else
             render json: "Not authorized"
     end
@@ -47,7 +51,7 @@ end
         @updater=User.find(params[:user_id])
         @expensegroup=@updater.expensegroups.find(params[:expgrpid])
         @det=@expensegroup.details.find(params[:expid])
-        if ((current_user.admin? && current_user.id!=@updater.id))
+        if ((current_user.admin? && current_user.id!=@updater.id) && @det.approval=="pending" && @expensegroup.status=="sent")
             data = json_payload.select { |k| MODIFY_DATA.include? k}
             if @det.update(data)
                  ApprovalMailer.with(updater: @updater, det: @det).confirmation.deliver_now

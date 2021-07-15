@@ -9,15 +9,17 @@ class ExpensegroupsController < ApplicationController
               if @expgrp.save 
                    render json: @expgrp
               else
-                    render json: "Error"
+                    render json: "error"
               end
+            else
+                render json: "User is terminated"
             end
 
 
 end
 def show
     @user=User.find(params[:id])
-    @expid=Expensegroup.find(params[:expid])
+    @expid=@user.expensegroups.find(params[:expid])
     if (@expid[:user_id].to_i)==(@user[:id].to_i)
           render 'show'
     else
@@ -43,10 +45,10 @@ def status_modify
     @emp=User.find(params[:id])
     @expgrp=@emp.expensegroups.find(params[:expgrpid])
     data = json_payload.select { |k| MODIFY_DATA.include? k}
-     if @expgrp.details.count!=0
+     if @expgrp.status!="sent" && @expgrp.details.count!=0
            @expgrp.update(data)
      else
-        render json: "NO expense added to send"
+        render json: "NO expense added to send or it is already sent for approval"
      end
     end
 end

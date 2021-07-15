@@ -8,15 +8,17 @@ class CommentsController < ApplicationController
          @expid=@expgrp.details.find(data[:detail_id])
         if @user[:id]==@emp[:id]
           render json:"Both admin and employee cant be same"
-        else    
+        else   
+          if (@expgrp.status=="sent" && (@expid[:invoiceno].to_i)%2==0)
                 @comment=@expid.comments.new(data)  
-                if @comment.save && @user.admin?
+                if @user.admin? && @comment.save
                 ApprovalMailer.with(comment: @comment, expid: @expid).section.deliver_now
+                render json: "Mail sent"
                 else
                 render json: "error"
                  end
         end
-            
+      end     
     end
     def show
        # @expid=Comment.find(params[:id])

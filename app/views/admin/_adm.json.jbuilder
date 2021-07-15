@@ -1,6 +1,7 @@
 json.extract! see, :email, :department, :phoneno, :gender
 json.expensegroups(see.expensegroups.where(status: "sent")) do |expensegroup|
     json.name expensegroup.name
+    json.id expensegroup.id
     json.expenses(expensegroup.details.where(approval: "pending")) do |detail|
     json.allowance detail.allowance
     json.invoiceno detail.invoiceno
