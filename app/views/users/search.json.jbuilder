@@ -1,4 +1,4 @@
-json.extract! @see, :email, :department, :phoneno, :gender
+json.extract! @see, :email, :department, :phone_no, :gender
 json.expensegroups(@see.expensegroups.incomplete.sent) do |expensegroup|
     json.name expensegroup.name
     json.id expensegroup.id

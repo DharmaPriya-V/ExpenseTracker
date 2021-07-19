@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_18_201646) do
+ActiveRecord::Schema.define(version: 2021_07_19_094426) do
 
   create_table "comments", force: :cascade do |t|
     t.integer "detail_id"
@@ -52,7 +52,6 @@ ActiveRecord::Schema.define(version: 2021_07_18_201646) do
     t.string "email"
     t.string "password_digest"
     t.string "department"
-    t.decimal "phoneno"
     t.string "gender"
     t.boolean "admin"
     t.datetime "created_at", precision: 6, null: false
@@ -60,6 +59,7 @@ ActiveRecord::Schema.define(version: 2021_07_18_201646) do
     t.string "name"
     t.string "status"
     t.string "empid"
+    t.integer "phone_no"
   end
 
 end

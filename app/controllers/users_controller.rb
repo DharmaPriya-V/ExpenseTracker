@@ -1,5 +1,4 @@
 class UsersController < ApplicationController
-    ALLOWED_DATA= %[email phoneno gender name].freeze
     before_action :detect_admin, only: [:search, :terminate]
 
     def index
@@ -14,6 +13,7 @@ class UsersController < ApplicationController
             render json: {"error": "Already exits"}
         else
             user.status="active"
+            user.empid="CA#{generate_employee_id}"
             if user.save
                 render json: user
             else
@@ -24,9 +24,8 @@ class UsersController < ApplicationController
 
     def update
         user=User.find(params[:id])
-        data = json_payload.select { |k| ALLOWED_DATA.include? k}
-        if user.update(data)
-            render json: :"Updated successfully #{userid}"
+        if user.update(update_params)
+            render json: :"Updated successfully"
         else
             render json: "Can't be updated"
         end
@@ -72,5 +71,18 @@ class UsersController < ApplicationController
     def search_params
         params.permit(:empid)
     end
+
+    def update_params
+        params.permit(:email, :phone_no, :gender, :name)
+    end    
+
+    def generate_employee_id
+        loop do
+            token=SecureRandom.random_number(200)
+            break token unless User.where(empid: token).exists?
+        end
+    end
 end
+
+
 

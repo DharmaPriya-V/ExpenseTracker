@@ -1,5 +1,6 @@
 module Invoice
     def invoice_check(detail)
+        employee=User.find(detail.user_id)
         uri = URI.parse("https://my.api.mockaroo.com/invoices.json")
         request = Net::HTTP::Post.new(uri)
         request["X-Api-Key"] = "b490bb80"
@@ -16,9 +17,9 @@ module Invoice
         check = JSON.parse output.gsub('=>', ':')
         if check['status'] == false
             detail.rejected!
+            ApprovalMailer.with(updater: employee, det: detail).confirmation.deliver_now
         else
             detail.update(system_check_status: true)
-            #ExpenseGroupMailer.with(user: employee, title: expense_group.title, applied_amount: expense_group.applied_amount).reject_message.deliver_now
         end
     end
 end    
