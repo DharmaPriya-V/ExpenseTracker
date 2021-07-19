@@ -1,0 +1,10 @@
+<%= "Hii #{@updater.name}" %>
+<% if @det.accepted? %>
+<%= "Your #{@det.allowance} expense has been approved" %>
+    <%="Total amount:  #{@det.amount}"%>
+    <%= "Approved amount: #{@det.amount}"%>
+<% else %>
+    <%= "Your #{@det.allowance} expense has been rejected" %>
+    <%="Total amount:  #{@det.amount}"%>
+    <%= "Approved amount: 0"%>
+<% end %>

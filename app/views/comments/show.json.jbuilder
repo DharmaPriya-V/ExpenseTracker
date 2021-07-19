@@ -1,1 +1,1 @@
-json.(@expid, :comment_with_user)
+json.(@expense :comment_with_user)

@@ -1,54 +1,67 @@
 class ExpensegroupsController < ApplicationController
-    ALLOWED_DATA= %[user_id name].freeze
-    MODIFY_DATA= %[status].freeze
-     def create
-        data = json_payload.select { |k| ALLOWED_DATA.include? k}
-       employeeid=data[:user_id]
-       if (User.find(employeeid).status)=="active"
-           @expgrp= User.find(employeeid).expensegroups.new(data)
-              if @expgrp.save 
-                   render json: @expgrp
-              else
-                    render json: "error"
-              end
+    include Invoice
+    before_action :find_user, only: [:create, :show, :index, :destroy, :update]
+
+    def create
+        if @user.status=="active"
+            @expgrp= @user.expensegroups.new(user_params)
+            @expgrp.details.each do |detail|
+                detail.update(user_id: @expgrp.user_id)
+                detail.save
+            end   
+            if @expgrp.save 
+                render json: @expgrp
             else
-                render json: "User is terminated"
+                render json: "not saved"
             end
+        else
+            render json: "User is terminated"
+        end
+    end
 
-
-end
-def show
-    @user=User.find(params[:id])
-    @expid=@user.expensegroups.find(params[:expid])
-    if (@expid[:user_id].to_i)==(@user[:id].to_i)
-          render 'show'
-    else
-        render json: "Not authorized"
+    def show
+        @expid=@user.expensegroups.find(params[:id])
+        render 'show'
     end    
 
-end
-def index
-    @exp=Expensegroup.all
-    render json:@exp
-end
-def destroy
-    emp=User.find(params[:id])
-    expgrp=emp.expensegroups.find(params[:expgrpid])
-    if expgrp.destroy 
-    render json:"Deleted"
-    else
-    render json: "Cant be deleted"
+    def index
+        render json: @user.expensegroups
     end
-end
 
-def status_modify
-    @emp=User.find(params[:id])
-    @expgrp=@emp.expensegroups.find(params[:expgrpid])
-    data = json_payload.select { |k| MODIFY_DATA.include? k}
-     if @expgrp.status!="sent" && @expgrp.details.count!=0
-           @expgrp.update(data)
-     else
-        render json: "NO expense added to send or it is already sent for approval"
-     end
+    def destroy
+        expgrp=@user.expensegroups.find(params[:id])
+        if expgrp.destroy 
+            render json:"Deleted"
+        else
+            render json: "Cant be deleted"
+        end
+    end
+
+    def update
+        expgrp=@user.expensegroups.find(params[:id])
+        if(expgrp.unsent? && expgrp.details.count!=0)
+            expgrp.update(update_params)
+            render json: "updated"
+            expgrp.details.each do |detail|
+            invoice_check(detail)
+            end
+        else
+            render json: "NO expense added to send or it is already sent"
+        end
+    end
+     
+    private
+    def user_params
+        params.require(:expensegroup).permit(:name, 
+        details_attributes: [:allowance, :date, :amount, :description, :approval, :invoiceno, :bills])
+    end
+
+    def update_params
+        params.require(:expensegroup).permit(:status)
+    end
+
+    def find_user
+        @user=User.find(params[:user_id])
+        Current.user = @user
     end
 end

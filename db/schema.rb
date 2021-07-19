@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_15_073921) do
+ActiveRecord::Schema.define(version: 2021_07_18_201646) do
 
   create_table "comments", force: :cascade do |t|
     t.integer "detail_id"
@@ -18,6 +18,7 @@ ActiveRecord::Schema.define(version: 2021_07_15_073921) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "parent_id"
+    t.integer "user_id"
   end
 
   create_table "details", force: :cascade do |t|
@@ -28,15 +29,24 @@ ActiveRecord::Schema.define(version: 2021_07_15_073921) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "user_id"
-    t.string "approval"
     t.integer "invoiceno"
     t.integer "expensegroup_id"
     t.string "bills"
+    t.integer "approval", default: 0
+    t.boolean "system_check_status", default: false
     t.index ["user_id"], name: "index_details_on_user_id"
   end
 
-# Could not dump table "expensegroups" because of following StandardError
-#   Unknown type 'String' for column 'grp_status'
+  create_table "expensegroups", force: :cascade do |t|
+    t.integer "user_id"
+    t.decimal "totalamount"
+    t.decimal "approvedamount"
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.integer "group_status", default: 0
+    t.integer "status", default: 0
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email"
