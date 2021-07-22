@@ -10,30 +10,26 @@ class ExpensegroupsController < ApplicationController
                 detail.save
             end   
             if @expgrp.save 
-                render json: @expgrp
-            else
-                render json: "not saved"
-            end
+                render json: @expgrp, status: :created
+            end    
         else
-            render json: "User is terminated"
+            render json: "{message: User is terminated}", status: :bad_request
         end
     end
 
     def show
         @expid=@user.expensegroups.find(params[:id])
-        render 'show'
+        render 'show', status: :ok
     end    
 
     def index
-        render json: @user.expensegroups
+        render json: @user.expensegroups, status: :ok
     end
 
     def destroy
         expgrp=@user.expensegroups.find(params[:id])
         if expgrp.destroy 
-            render json:"Deleted"
-        else
-            render json: "Cant be deleted"
+            render json:"{message: Deleted}", status: :ok
         end
     end
 
@@ -41,12 +37,12 @@ class ExpensegroupsController < ApplicationController
         expgrp=@user.expensegroups.find(params[:id])
         if(expgrp.unsent? && expgrp.details.count!=0)
             expgrp.update(update_params)
-            render json: "updated"
+            render json: "{message: updated}", status: :ok
             expgrp.details.each do |detail|
             invoice_check(detail)
             end
         else
-            render json: "NO expense added to send or it is already sent"
+            render json: "{error: NO expense added to send or it is already sent}", status: :bad_request
         end
     end
      

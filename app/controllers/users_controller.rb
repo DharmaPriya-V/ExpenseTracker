@@ -10,12 +10,12 @@ class UsersController < ApplicationController
         data=json_payload
         user=User.new(data)
         if User.exists?(:email => "#{user[:email]}")
-            render json: {"error": "Already exits"}
+            render json: {"error": "Already exits"}, status: :bad_request
         else
             user.status="active"
             user.empid="CA#{generate_employee_id}"
             if user.save
-                render json: user
+                render json: user, status: :created
             else
                 render json: {"error": "Please ensure you entered correct details"}
             end
@@ -25,21 +25,19 @@ class UsersController < ApplicationController
     def update
         user=User.find(params[:id])
         if user.update(update_params)
-            render json: :"Updated successfully"
+            render json: "{message: Updated successfully}", status: :ok
         else
-            render json: "Can't be updated"
+            render json: "{message: Check the credentails}", status: :internal_server_error
         end
     end 
 
     def terminate
         emp=User.find(params[:empid])
         if @user.id==emp.id
-            render json: "U can't terminate your own account"
+            render json: "{error: U can't terminate your own account}", status: :bad_request
         else
             if emp.update(user_params)
-                render json: "Terminated"
-            else
-                render json: "Can't be terminated"
+                render json: "{message: Terminated}", status: :ok
             end
         end
     end
@@ -51,10 +49,10 @@ class UsersController < ApplicationController
             if @see
                 render 'search', formats: [:json], handlers: [:jbuilder], status: :ok
             else
-                render json: "user not found"
+                render json: "{error: user not found}", status: :not_found
             end
         else
-             render json: "enter the Employee id to search"
+             render json: "{error: enter the Employee id to search}", status: :bad_request
         end
     end
 

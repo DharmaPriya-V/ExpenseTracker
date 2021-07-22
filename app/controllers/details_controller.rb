@@ -11,7 +11,7 @@ class DetailsController < ApplicationController
 
     def show
         @detail=@user.details.find(params[:id])
-        render 'show'
+        render 'show', status: :ok
     end
 
     def create
@@ -21,21 +21,17 @@ class DetailsController < ApplicationController
                 detail=user.details.new(detail_params)         
                 if detail.save                  
                     invoice_check(detail)
-                    render json: detail
-                else
-                    render json: {"error": "cant be saved"}
-                end
+                    render json: detail, status: :created
+                end   
             else
                 expgrp=Expensegroup.find(params[:expensegroup_id])
                 if expgrp.sent?
-                    render json: "Already sent you cant update"
+                    render json: "{error: Already sent you cant update}", status: :bad_request
                 else
                     detail=expgrp.details.new(detail_params)
                     detail.update(user_id: expgrp.user_id)
                     if detail.save
-                        render json: detail
-                    else
-                        render json: "Cant be saved"    
+                        render json: detail, status: :created
                     end      
                 end      
             end
@@ -45,9 +41,7 @@ class DetailsController < ApplicationController
     def destroy
         @exp=@user.details.find(params[:id])
         if  @exp.destroy
-            render json: "Deleted"
-        else
-            render json: "Error"
+            render json: "{message: Deleted}", status: :ok
         end
     end
    
@@ -59,17 +53,18 @@ class DetailsController < ApplicationController
             if ((@user.id!=employee.id) && expense.pending? && expgrp.sent?)
                 if expense.update(update_params)
                     ApprovalMailer.with(updater: employee, det: expense).confirmation.deliver_now
-                    render json: "Mail sent"
+                    render json: "{message: Mail sent}", status: :ok
                 end
             else
-                render json: "cant be sent"
+                render json: "{error: can't be updated}", status: :bad_request
             end
         else
             if expense.pending?
-                expense.update(update_params)    
+                expense.update(update_params)
                 ApprovalMailer.with(updater: employee, det: expense).confirmation.deliver_now 
+                render json: "{message: Mail sent}", status: :ok
             else
-                render json: "Expense not sent"
+                render json: "{error: Expense not sent}", status: :bad_request
             end    
         end
     end    
@@ -79,14 +74,14 @@ class DetailsController < ApplicationController
         if exp.expensegroup_id!=nil
             expgrp=Expensegroup.find(exp.expensegroup_id)  
             if expgrp.sent?
-                render json: "Already sent you cant update"
+                render json: "{error: Already sent you cant update}", status: :bad_request
             else
                 data = json_payload.select { |k| ALLOWED_DATA.include? k}
                 exp.update(data)
-                render json: "Updated sucessfully"
+                render json: "{message: Updated sucessfully}", status: :ok
             end
         else
-            render json: "already sent"
+            render json: "{error: already sent}", status: :bad_request
         end
     end
     

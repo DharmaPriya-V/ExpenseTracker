@@ -7,7 +7,7 @@ class Comment < ApplicationRecord
         expense=Detail.find(detail_id)
         username=User.find(user_id)
         if parent_id==nil 
-            "#{description} commented by admin"
+            "#{description}"
          else
             "#{description} commented by #{username[:name]} to #{parent_id}"            
         end
