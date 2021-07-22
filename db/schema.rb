@@ -10,13 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_12_103935) do
+ActiveRecord::Schema.define(version: 2021_07_19_094426) do
 
   create_table "comments", force: :cascade do |t|
     t.integer "detail_id"
     t.string "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "parent_id"
+    t.integer "user_id"
   end
 
   create_table "details", force: :cascade do |t|
@@ -27,16 +29,29 @@ ActiveRecord::Schema.define(version: 2021_07_12_103935) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "user_id"
-    t.string "approval"
     t.integer "invoiceno"
+    t.integer "expensegroup_id"
+    t.string "bills"
+    t.integer "approval", default: 0
+    t.boolean "system_check_status", default: false
     t.index ["user_id"], name: "index_details_on_user_id"
+  end
+
+  create_table "expensegroups", force: :cascade do |t|
+    t.integer "user_id"
+    t.decimal "totalamount"
+    t.decimal "approvedamount"
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.integer "group_status", default: 0
+    t.integer "status", default: 0
   end
 
   create_table "users", force: :cascade do |t|
     t.string "email"
     t.string "password_digest"
     t.string "department"
-    t.decimal "phoneno"
     t.string "gender"
     t.boolean "admin"
     t.datetime "created_at", precision: 6, null: false
@@ -44,6 +59,7 @@ ActiveRecord::Schema.define(version: 2021_07_12_103935) do
     t.string "name"
     t.string "status"
     t.string "empid"
+    t.integer "phone_no"
   end
 
 end

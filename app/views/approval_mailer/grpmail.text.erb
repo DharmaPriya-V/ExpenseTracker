@@ -1,0 +1,15 @@
+<%= "Hii #{@user_to_update.name}" %>
+<%= "Approved details" %>
+<% @expensegroup.details.accepted.each do |detail|%>
+ <%= "Detail type: #{detail.allowance}"%>
+   <%= "Total amount:  #{detail.amount}" %>
+   <%= "Approved amount: #{detail.amount}"%>
+    <% end %>
+ <%= "Rejected details" %>   
+<% @expensegroup.details.rejected.each do |detail|%>
+   <%= "Detail type: #{detail.allowance}"%>
+   <%= "Total amount:  #{detail.amount}" %>
+   <%= "Approved amount: 0"%>
+    <% end %>
+<%= "Total amount in the Expense group is #{@expensegroup.totalamount}" %>
+<%= "Total approved amount in the Expense group is #{@expensegroup.approvedamount}" %>

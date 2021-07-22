@@ -1,5 +1,4 @@
-json.extract! user, :email, :department, :phoneno, :gender
-json.details(user.details) do |detail|
-    json.invoiceno detail.invoiceno
-   json.url detail_url(detail, format: :json)
+json.extract! user, :email, :department, :phone_no, :gender
+json.expensegroup(user.expensegroups) do |expensegroup|
+    json.name expensegroup.name
 end    

@@ -1,4 +1,7 @@
-json.extract! @detail, :allowance, :invoiceno, :user_id, :approval
-json.details(@detail.comments) do |comment|
+json.extract! @detail, :allowance, :invoiceno, :user_id, :approval, :system_check_status
+json.comments(@detail.comments) do |comment|
+    json.parent_id comment.parent_id
+    json.id comment.id
+    json.user_id comment.user_id 
     json.(comment, :comment_with_user)
 end   
